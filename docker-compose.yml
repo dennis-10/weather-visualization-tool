@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  backend:
+    image: weather_backend
+    container_name: weather-backend
+    ports:
+      - "8000:8000"
+
+  frontend:
+    image: weather_frontend
+    container_name: weather-frontend
+    ports:
+      - "4200:4200"
