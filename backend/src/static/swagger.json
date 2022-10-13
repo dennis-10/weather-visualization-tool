@@ -1,0 +1,11 @@
+{
+    "openapi":"3.0.0",
+    "info": {
+        "description": "weather visualization tool",
+        "version": "1.0.0",
+        "title": "weather visualization tool",
+        "contact": {
+            "email": "dennissantosr@gmail.com"
+        }
+    }
+}
