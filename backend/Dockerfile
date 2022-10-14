@@ -1,9 +1,9 @@
-FROM python:3.8
+FROM python:3.10
 
 WORKDIR /backend
 COPY . .
 
-RUN pip install -r requirements.txt
+RUN pip install -r requirements-wsl.txt
 
-CMD ["uvicorn", "src.main:app", "--reload"]
-EXPOSE 8080
+CMD ["python", "src/__init__.py"]
+EXPOSE 5000

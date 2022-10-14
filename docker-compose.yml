@@ -2,13 +2,7 @@ version: "3.7"
 
 services:
   backend:
-    image: weather_backend
-    container_name: weather-backend
+    image: weather-tool
+    container_name: weather-tool
     ports:
-      - "8000:8000"
-
-  frontend:
-    image: weather_frontend
-    container_name: weather-frontend
-    ports:
-      - "4200:4200"
+      - "5000:5000"
