@@ -53,7 +53,27 @@
             </div>
             </div>
         </div>
-        
+
+        <!-- Modal Settings-->
+        <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="settingsModalLabel">Settings</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label>File's path: </label>
+                    <input type="text" class="form-control" placeholder="e.g. C:\User\Desktop\dataINEA" aria-label="Username" aria-describedby="basic-addon1">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Apply</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+            </div>
+        </div>
+
         <h1>Weather Visualization Tool</h1>
         <div>{{map|safe}}</div>
     </body>
