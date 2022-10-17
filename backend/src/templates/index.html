@@ -13,6 +13,18 @@
     </head>
     
     <body id="map">
+        <nav class="navbar navbar-expand-lg bg-light">
+            <div class="container-fluid">
+              <a class="navbar-brand mx-auto" href="index.html"><img src="logoWVT.png" class="rounded" alt="logo" height="70" width="350"></a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#settingsModal">Settings</button>
+                <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#aboutModal">About</button>
+              </div>
+            </div>
+        </nav>
         <h1>Weather Visualization Tool</h1>
         <div>{{map|safe}}</div>
     </body>
