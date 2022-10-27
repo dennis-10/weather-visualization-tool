@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 from flask_swagger_ui import get_swaggerui_blueprint
-from alerta_rio_service import AlertaRioService
-from visualization_map import rio_map
+from src.alerta_rio_service import AlertaRioService
+from src.visualization_map import rio_map
 
 # Starting Flask app
 app = Flask(__name__)
