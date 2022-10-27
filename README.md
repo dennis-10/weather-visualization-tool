@@ -4,9 +4,6 @@
 
 <h4 align="center">
   WVTool - Weather Visualization Tool
-  <br>
-  <a href="https://weather-visualization-tool.vercel.app">Production</a> |
-  <a href="https://weather-visualization-tool-git-dev-cassiofb-dev.vercel.app">Development</a>
 </h4>
 
 <p align="center">
@@ -16,6 +13,7 @@
   <a href="#workflow">Workflow</a> •
   <a href="#architecture-diagram">Architecture Diagram</a> •
   <a href="#project-requirements">Project Requirements</a> •
+  <a href="#schedule">Schedule</a> •
   <a href="#credits">Credits</a> •
   <a href="#license">License</a>
 </p>
@@ -26,7 +24,7 @@
 
 WVTool stands for Weather Visualization Tool. WVtool is a project that its main goal
 is to visualize GOES-16 weather data for Rio de Janeiro region. This project is done
-by CEFET/RJ Computer Science course students.
+by CEFET/RJ CC course students.
 
 ## Features
 
@@ -44,43 +42,33 @@ For running this project locally you will need to install:
 
 1. [Git](https://github.com/git/git)
 2. [Node.js](https://nodejs.org/en/)
+3. [Docker](https://www.docker.com/)
 
 ```bash
 # Clone the repository
-git clone https://github.com/cassiofb-dev/weather-visualization-tool
+git clone https://github.com/dennis-10/weather-visualization-tool
 
 # Go into project directory
 cd weather-visualization-tool
 
-# Go into frontend directory
-cd frontend
+# Go into backend directory
+cd backend
 
-# Install frontend dependencies
-npm i
+# Build the Dockerfile for generating an image
+docker build . -t weather-tool
 
-# Start frontend application
-npm start
+# Run the Docker container
+docker run -i -t -p 5000:5000 weather-tool
+
 ```
 
 ## Workflow
 
-For deploying new code on production enviroment, the WVTool's team uses [Vercel](https://vercel.com) for the frontend. This project uses 3 types of enviroments:
-
-1. Production - Code found in master branch, stable releases.
-2. Preview - Code found in dev branch where the new features are gathered. If no bugs are found and the team approve the changes it goes into master then production enviroment.
-3. Staging - Code found in each individual feature branch, this helps isolating a feature for testing. In case that no bugs are found, the team can approve this branch to go into dev then the code will be deployed to preview enviroment.
-
-Below is a image to better visualization of this project workflow.
-
-![workflow](https://i.imgur.com/dQhte2C.png)
+-
 
 ## Architecture Diagram
 
-This project uses geospatial data, the WSM protocol. The following explanation and image are from the academic paper: Walker, A. & Pham, Binh & Maeder, Anthony. (2004). A bayesian framework for automated dataset retrieval in geographic Information Systems. Proceedings - 10th International Multimedia Modelling Conference, MMM 2004. 138- 144. 10.1109/MULMM.2004.1264978.
-
-> WMS provides the ability to download maps from WMS servers, thus, allowing different datasets from different WMS servers as well as local data to easily be combined into single map visualization. WMS uses client-server architecture as shown in Figure 1.
-
-![wms-archtecture](https://i.imgur.com/sGRPi4s.png)
+-
 
 ## Project Requirements
 
@@ -122,14 +110,17 @@ The original requirement document can be found in this [link](https://github.com
 4. The first task must be done as a read me markdown file on github.
 5. The tasks 1.2, 1.3 and 1.4 must be in docs directiory.
 
+## Schedule
+
+-
+
+### Schedule Task Legend
+
+-
+
 ## Credits
 
-This app uses the following open source projects:
-
-* [Git](https://github.com/git/git)
-* [Node.js](https://nodejs.org/en/)
-* [Angular](https://github.com/angular/angular)
-* [Leaflet](https://github.com/Leaflet/Leaflet)
+-
 
 ## License
 
@@ -137,6 +128,5 @@ MIT
 
 ---
 
-> Vitória Santos [@viisantos](https://github.com/viisantos) &nbsp;&middot;&nbsp;
-> Cásio Fernando [@cassiofb-dev](https://github.com/cassiofb-dev) &nbsp;&middot;&nbsp;
-> Dennis [@dennissrn](https://twitter.com/dennissrn)
+> Raphael do Val [@raphadvl](https://github.com/raphadvl) &nbsp;&middot;&nbsp;
+> Dennis Rodrigues [@dennis-10](https://github.com/dennis-10) &nbsp;&middot;&nbsp;
