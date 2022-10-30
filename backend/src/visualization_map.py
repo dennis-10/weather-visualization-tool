@@ -89,3 +89,19 @@ initial_data = np.random.normal(size=(100, 2)) * np.array([[0.1, 0.11]]) + np.ar
 move_data = np.random.normal(size=(100, 2)) * 0.01
 data = [(initial_data + move_data * i).tolist() for i in range(100)]
 
+time_ = 0
+N = len(data)
+itensify_factor = 30
+for time_entry in data:
+    time_ = time_+1
+    for row in time_entry:
+        weight = min(np.random.uniform()*(time_/(N))*itensify_factor, 1)
+        row.append(weight)
+
+time_index = [(datetime.now() + k * timedelta(1)).strftime("%d-%m-%Y") for k in range(len(data))]
+
+hm = plugins.HeatMapWithTime(data, index=time_index, auto_play=True, max_opacity=0.6)
+hm.add_to(rio_map)
+
+rio_map.save('map.html')
+webbrowser.open('map.html')
