@@ -70,12 +70,15 @@ assert(49==len(grid_cells))
 
 lat = list(df_estacoes.Latitude)
 lon = list(df_estacoes.Longitude)
+bairro = list(df_estacoes.Estação)
+i=0
 
 for loc in zip(lat, lon):
     folium.Circle(
         location=loc,
         radius=10,
         fill=True,
+        tooltip=bairro[i],
         color='red',
         fill_opacity=0.7
     ).add_to(rio_map)
