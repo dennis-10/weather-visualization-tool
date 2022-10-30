@@ -82,3 +82,10 @@ for loc in zip(lat, lon):
         color='red',
         fill_opacity=0.7
     ).add_to(rio_map)
+
+
+np.random.seed(3141592)
+initial_data = np.random.normal(size=(100, 2)) * np.array([[0.1, 0.11]]) + np.array([[-22.99, -43.59]])
+move_data = np.random.normal(size=(100, 2)) * 0.01
+data = [(initial_data + move_data * i).tolist() for i in range(100)]
+
