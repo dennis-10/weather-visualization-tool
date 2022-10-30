@@ -1,12 +1,21 @@
+import warnings
+import webbrowser
+warnings.filterwarnings('ignore')
+
 import pandas as pd
 import geopandas as gpd
 import folium
+from folium import plugins
 from shapely.geometry import Polygon
+from pathlib import Path
+import matplotlib.pyplot as plt
+import wradlib as wrl
+import numpy as np
+from datetime import datetime, timedelta
 
 # Reading and transforming Alerta Rio data
 df_estacoes = pd.read_csv('./src/static/estacoes_pluviometricas.csv')
 df_estacoes = df_estacoes.drop(columns=['Unnamed: 0'])
-df_estacoes.head()
 
 rio_map = folium.Map([-22.925778948753702, -43.489029909370046], zoom_start=10, tiles='cartodbpositron')
 colormap = ['magenta', 'red', 'orange', 'yellow']
