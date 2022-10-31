@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 from flask_swagger_ui import get_swaggerui_blueprint
 from src.alerta_rio_service import AlertaRioService
 from src.visualization_map import rio_map
+from src.visualization_line_chart import anim
 
 # Starting Flask app
 app = Flask(__name__)
@@ -9,7 +10,8 @@ app = Flask(__name__)
 # Endpoint for main visualization
 @app.route('/')
 def index():
-    return render_template("index.html", map=rio_map._repr_html_())
+    return render_template("index.html", map=rio_map._repr_html_(), 
+    chart1=anim, chart2=anim)
 
 # Endpoint for getting alerta rio data
 @app.route("/data/")

@@ -38,3 +38,4 @@ tzlocal==4.2
 urllib3==1.26.12
 Werkzeug==2.2.2
 matplotlib
+ffmpeg-python
