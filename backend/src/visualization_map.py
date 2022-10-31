@@ -102,6 +102,3 @@ time_index = [(datetime.now() + k * timedelta(1)).strftime("%d-%m-%Y") for k in 
 
 hm = plugins.HeatMapWithTime(data, index=time_index, auto_play=True, max_opacity=0.6)
 hm.add_to(rio_map)
-
-rio_map.save('map.html')
-webbrowser.open('map.html')
