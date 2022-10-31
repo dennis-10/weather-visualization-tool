@@ -11,7 +11,7 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     return render_template("index.html", map=rio_map._repr_html_(), 
-    chart1=anim._repr_html_(), chart2=anim._repr_html_())
+    chart1=anim, chart2=anim)
 
 # Endpoint for getting alerta rio data
 @app.route("/data/")

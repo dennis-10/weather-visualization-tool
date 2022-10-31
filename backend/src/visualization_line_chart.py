@@ -27,4 +27,5 @@ def animate(i):
     ax.set_title(title)
 
 anim = animation.FuncAnimation(fig, animate, frames = len(x) + 1, interval = 350, blit = False)
+anim = anim.to_html5_video()
 #plt.show()
