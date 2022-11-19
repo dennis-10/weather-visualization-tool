@@ -1,33 +1,54 @@
 from flask import Flask, render_template, request
 from flask_swagger_ui import get_swaggerui_blueprint
 from src.alerta_rio_service import AlertaRioService
-from src.visualization_map import rio_map
 from src.visualization_line_chart import anim
+from src.global_variables import data_path
+from src.visualization_map import RioMap
+from flask_cors import CORS
 
 # Starting Flask app
 app = Flask(__name__)
+CORS(app)
+
+# Instantiate map object
+rio_map = RioMap()
 
 # Endpoint for main visualization
 @app.route('/')
 def index():
-    return render_template("index.html", map=rio_map._repr_html_(), 
-    chart1=anim, chart2=anim)
+  return render_template(
+    "index.html",
+    map=rio_map.map_visualization._repr_html_(), 
+    chart1=anim, 
+    chart2=anim)
+
+# Endpoint for setting the data path
+@app.route('/data/set_data_path', methods=["PUT"])
+def set_data_path():
+  try:
+    new_path = request.get_json()
+    data_path = new_path['data_path']    
+    rio_map.generate_rio_map(data_path)
+
+    return rio_map.map_visualization._repr_html_()
+  except Exception as error:
+    raise error
 
 # Endpoint for getting alerta rio data
 @app.route("/data/")
 def get_data():
     try:
-        seconds_interval = request.args.get("seconds_interval")
+      seconds_interval = request.args.get("seconds_interval")
 
-        response = AlertaRioService.get_data(
-          request.args.get("start_time"),
-          request.args.get("end_time"),
-          int(seconds_interval),
-          request.args.get("station"))
-          
-        return response
+      response = AlertaRioService.get_data(
+        request.args.get("start_time"),
+        request.args.get("end_time"),
+        int(seconds_interval),
+        request.args.get("station"))
+        
+      return response
     except Exception as error:
-        raise error
+      raise error
 
 # Swagger DOCS
 SWAGGER_URL = '/swagger'
