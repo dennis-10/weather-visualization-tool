@@ -23,16 +23,37 @@ def index():
     chart2=anim)
 
 # Endpoint for setting the data path
-@app.route('/data/set_data_path', methods=["PUT"])
+@app.route('/map', methods=["GET"])
 def set_data_path():
   try:
-    new_path = request.get_json()
-    data_path = new_path['data_path']    
-    rio_map.generate_rio_map(data_path)
+    # json = request.get_json()
+    # data_path = json['data_path']
+
+    # Range of date time to generate each map frame
+    # start_date = json['start_date']
+    # end_date = json['end_date']
+    print("here")
+    data_path = request.args.get('data_path')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    rio_map.generate_rio_map(data_path, start_date, end_date)
 
     return rio_map.map_visualization._repr_html_()
   except Exception as error:
     raise error
+
+# # Endpoint for setting the data path
+# @app.route('/data/set_data_path', methods=["PUT"])
+# def set_data_path():
+#   try:
+#     new_path = request.get_json()
+#     data_path = new_path['data_path']    
+#     rio_map.generate_rio_map(data_path)
+
+#     return rio_map.map_visualization._repr_html_()
+#   except Exception as error:
+#     raise error
 
 # Endpoint for getting alerta rio data
 @app.route("/data/")
