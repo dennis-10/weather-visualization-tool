@@ -21,6 +21,7 @@ class RioMap():
       start_date="2022-01-01 00:00:00",
       end_date="2022-01-01 00:00:20")
 
+
   # Reading and transforming Alerta Rio data
   def generate_rio_map(self, data_path, start_date, end_date):
     
@@ -28,19 +29,26 @@ class RioMap():
     st_date = isoparse(start_date)
     ed_date = isoparse(end_date)
 
+    # Generating rio map without data
+    (rio_map, grid_cells) = self._generate_base_map()
+
     try:
       df_estacoes = self._get_data(data_path, st_date, ed_date)
+      df = df_estacoes[st_date]
+      print("aqui",df.columns)
+      
+      return self._generate_map_with_real_data(st_date, rio_map)
       
     except Exception as e:
       print(e)
       print("Exception while getting data, changing the date might solve.")
       print("Getting mocked data instead.")
 
-      df_estacoes = pd.read_csv(f'./{"src/static/estacoes_pluviometricas.csv"}')
-      df_estacoes = df_estacoes.drop(columns=['Unnamed: 0'])
+      return self._generate_map_with_mock(rio_map, grid_cells)
+          
 
+  def _generate_base_map(self):
     rio_map = folium.Map([-22.925778948753702, -43.489029909370046], zoom_start=10, tiles='cartodbpositron')
-    colormap = ['magenta', 'red', 'orange', 'yellow']
     folium.LatLngPopup().add_to(rio_map)
 
     import warnings
@@ -88,44 +96,8 @@ class RioMap():
         polygon = gpd.GeoDataFrame(index=[0], crs=crs, geometry=[polygon_geom])    
         folium.GeoJson(polygon).add_to(rio_map)
 
-    assert(49==len(grid_cells))
-    
-    lat = list(df_estacoes.Latitude)
-    lon = list(df_estacoes.Longitude)
-    bairro = list(df_estacoes.Estação)
-    i=0
+    return (rio_map, grid_cells)
 
-    for loc in zip(lat, lon):
-        folium.Circle(
-            location=loc,
-            radius=10,
-            fill=True,
-            tooltip=bairro[i],
-            color='red',
-            fill_opacity=0.7
-        ).add_to(rio_map)
-
-    # Generating moving data
-    np.random.seed(3141592)
-    initial_data = np.random.normal(size=(100, 2)) * np.array([[0.1, 0.11]]) + np.array([[-22.99, -43.59]])
-    move_data = np.random.normal(size=(100, 2)) * 0.01
-    data = [(initial_data + move_data * i).tolist() for i in range(100)]
-
-    time_ = 0
-    N = len(data)
-    itensify_factor = 30
-    for time_entry in data:
-        time_ = time_+1
-        for row in time_entry:
-            weight = min(np.random.uniform()*(time_/(N))*itensify_factor, 1)
-            row.append(weight)
-
-    time_index = [(st_date + k * timedelta(0, 20)).strftime("%d-%m-%Y, %H:%M:%S") for k in range(len(data))]
-
-    hm = plugins.HeatMapWithTime(data, index=time_index, auto_play=True, max_opacity=0.6)
-    hm.add_to(rio_map)
-    return rio_map
-    
   # Used to generate data for main view
   def _get_data(self, data_path : str, st_date : datetime, ed_date : datetime) -> dict:
     DATA_DIR = data_path
@@ -179,8 +151,57 @@ class RioMap():
         count += 1
         dic_date = dic_date + timedelta(0, 20)
         
-    
+    print(dataframe_dic.keys())
+    print(dataframe_dic.values())
+    print(dataframe_dic[dic_date])
     return dataframe_dic
+
+
+  def _generate_map_with_real_data(self, st_date: datetime, rio_map: folium.Map):
+    # Generating moving data
+    np.random.seed(3141592)
+    initial_data = np.random.normal(size=(100, 2)) * np.array([[0.1, 0.11]]) + np.array([[-22.99, -43.59]])
+    move_data = np.random.normal(size=(100, 2)) * 0.01
+    data = [(initial_data + move_data * i).tolist() for i in range(100)]
+
+    time_ = 0
+    N = len(data)
+    itensify_factor = 30
+    for time_entry in data:
+        time_ = time_+1
+        for row in time_entry:
+            weight = min(np.random.uniform()*(time_/(N))*itensify_factor, 1)
+            row.append(weight)
+
+    time_index = [(st_date + k * timedelta(0, 20)).strftime("%d-%m-%Y, %H:%M:%S") for k in range(len(data))]
+    
+    hm = plugins.HeatMapWithTime(data, index=time_index, auto_play=True, max_opacity=0.6)
+    hm.add_to(rio_map)
+    return rio_map
+
+
+  def _generate_map_with_mock(self, rio_map, grid_cells):
+    df_estacoes = pd.read_csv(f'./{"src/static/estacoes_pluviometricas.csv"}')
+    df_estacoes = df_estacoes.drop(columns=['Unnamed: 0'])
+
+    assert(49==len(grid_cells))
+    
+    lat = list(df_estacoes.Latitude)
+    lon = list(df_estacoes.Longitude)
+    bairro = list(df_estacoes.Estação)
+    i=0
+
+    for loc in zip(lat, lon):
+        folium.Circle(
+            location=loc,
+            radius=10,
+            fill=True,
+            tooltip=bairro[i],
+            color='red',
+            fill_opacity=0.7
+        ).add_to(rio_map)
+
+    return rio_map
 
 
   def _filter_coordinates(self, ds: xr.Dataset):
@@ -189,7 +210,7 @@ class RioMap():
         (ds['event_lon'] >= -43.8) & (ds['event_lon'] <= -43.0))
 
 
-  def _preparing_data(df):
+  def _preparing_data(self, df):
     df.drop(df.columns[4:-1],
                 axis=1,
                 inplace=True)
