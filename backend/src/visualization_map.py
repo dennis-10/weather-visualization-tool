@@ -4,10 +4,13 @@ warnings.filterwarnings('ignore')
 import pandas as pd
 import geopandas as gpd
 import folium
+from folium import plugins
 from shapely.geometry import Polygon
 from dateutil.parser import isoparse
 import xarray as xr
 import os
+import numpy as np
+from datetime import datetime, timedelta
 
 class RioMap():
 
@@ -16,15 +19,20 @@ class RioMap():
     self.map_visualization = self.generate_rio_map(
       data_path,
       start_date="2022-01-01 00:00:00",
-      end_date="2022-01-01 00:00:15")
-  
+      end_date="2022-01-01 00:00:20")
+
   # Reading and transforming Alerta Rio data
   def generate_rio_map(self, data_path, start_date, end_date):
     
-    try:
-      df_estacoes = self._get_data(data_path, start_date, end_date)
+    # Converting from string to datetime
+    st_date = isoparse(start_date)
+    ed_date = isoparse(end_date)
 
-    except:
+    try:
+      df_estacoes = self._get_data(data_path, st_date, ed_date)
+      
+    except Exception as e:
+      print(e)
       print("Exception while getting data, changing the date might solve.")
       print("Getting mocked data instead.")
 
@@ -62,7 +70,7 @@ class RioMap():
       for i, _ in enumerate(lat_list):
         if i + 1 == len(lat_list):
           break
-
+        
         lon_ul, lat_ul = lon_list[j], lat_list[i]
         lon_ur, lat_ur = lon_list[j+1], lat_list[i]
         lon_lr, lat_lr = lon_list[j+1], lat_list[i+1]
@@ -81,7 +89,7 @@ class RioMap():
         folium.GeoJson(polygon).add_to(rio_map)
 
     assert(49==len(grid_cells))
-
+    
     lat = list(df_estacoes.Latitude)
     lon = list(df_estacoes.Longitude)
     bairro = list(df_estacoes.Estação)
@@ -97,33 +105,30 @@ class RioMap():
             fill_opacity=0.7
         ).add_to(rio_map)
 
-    # np.random.seed(3141592)
-    # initial_data = np.random.normal(size=(100, 2)) * np.array([[0.1, 0.11]]) + np.array([[-22.99, -43.59]])
-    # move_data = np.random.normal(size=(100, 2)) * 0.01
-    # data = [(initial_data + move_data * i).tolist() for i in range(100)]
+    # Generating moving data
+    np.random.seed(3141592)
+    initial_data = np.random.normal(size=(100, 2)) * np.array([[0.1, 0.11]]) + np.array([[-22.99, -43.59]])
+    move_data = np.random.normal(size=(100, 2)) * 0.01
+    data = [(initial_data + move_data * i).tolist() for i in range(100)]
 
-    # time_ = 0
-    # N = len(data)
-    # itensify_factor = 30
-    # for time_entry in data:
-    #     time_ = time_+1
-    #     for row in time_entry:
-    #         weight = min(np.random.uniform()*(time_/(N))*itensify_factor, 1)
-    #         row.append(weight)
+    time_ = 0
+    N = len(data)
+    itensify_factor = 30
+    for time_entry in data:
+        time_ = time_+1
+        for row in time_entry:
+            weight = min(np.random.uniform()*(time_/(N))*itensify_factor, 1)
+            row.append(weight)
 
-    # time_index = [(datetime.now() + k * timedelta(1)).strftime("%d-%m-%Y") for k in range(len(data))]
+    time_index = [(st_date + k * timedelta(0, 20)).strftime("%d-%m-%Y, %H:%M:%S") for k in range(len(data))]
 
-    # hm = plugins.HeatMapWithTime(data, index=time_index, auto_play=True, max_opacity=0.6)
-    # hm.add_to(rio_map)
+    hm = plugins.HeatMapWithTime(data, index=time_index, auto_play=True, max_opacity=0.6)
+    hm.add_to(rio_map)
     return rio_map
     
   # Used to generate data for main view
-  def _get_data(self, data_path : str, start_date : str, end_date : str):
+  def _get_data(self, data_path : str, st_date : datetime, ed_date : datetime) -> dict:
     DATA_DIR = data_path
-
-    # Converting from string to datetime
-    st_date = isoparse(start_date)
-    ed_date = isoparse(end_date)
 
     # Each file records 20 seconds of obeservation
     seconds_dif = (ed_date - st_date).total_seconds()
@@ -148,39 +153,37 @@ class RioMap():
         st_hour = f"0{st_hour}"
 
     file_path = f"{DATA_DIR}/{st_year}/{st_day}/{st_hour}"
-    print('here')
-    count = 0
-
+    
+    dic_date = st_date
+    dataframe_dic = dict()
     total_count, count = (1,1)
     for file in os.listdir(file_path):
-      print('here2')
-      print(total_count)
+
       if total_count < begin_file_number:
-          total_count += 1
-          continue
-      
+        total_count += 1
+        continue
+
       ds = xr.open_dataset(f"{file_path}/{file}")
-      
-      print(ds)
+
       try:
-          ds = self._filter_coordinates(ds)
+        ds = self._filter_coordinates(ds)
       except ValueError:
-          print('ValueError')
+        print('ValueError')
 
       df = ds.to_dataframe()
-      data = df.to_json()
+      dataframe_dic[dic_date] = df
 
       if count == total_files:
-          break
+        break
       else:
-          count += 1
+        count += 1
+        dic_date = dic_date + timedelta(0, 20)
         
-    response_dict = {"data": data}
-    print(response_dict)
-    return response_dict
+    
+    return dataframe_dic
 
 
-  def _filter_coordinates(self, ds:xr.Dataset):
+  def _filter_coordinates(self, ds: xr.Dataset):
     return ds['event_energy'].where(
         (ds['event_lat'] >= -24.0) & (ds['event_lat'] <= -22.5) & 
         (ds['event_lon'] >= -43.8) & (ds['event_lon'] <= -43.0))
