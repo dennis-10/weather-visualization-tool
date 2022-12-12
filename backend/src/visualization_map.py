@@ -76,8 +76,8 @@ class RioMap():
     lat = list(df_estacoes.Latitude)
     lon = list(df_estacoes.Longitude)
     bairro = list(df_estacoes.Estação)
-    i=0
 
+    i=0
     for loc in zip(lat, lon):
         folium.Circle(
             location=loc,
@@ -87,6 +87,7 @@ class RioMap():
             color='red',
             fill_opacity=0.7
         ).add_to(rio_map)
+        i=i+1
 
     np.random.seed(3141592)
     initial_data = np.random.normal(size=(100, 2)) * np.array([[0.1, 0.11]]) + np.array([[-22.99, -43.59]])
