@@ -14,30 +14,28 @@ from datetime import datetime, timedelta
 
 class RioMap():
 
-  # Constructor
+  # Class constructor
   def __init__(self, data_path="./src/static/satelite_data") -> None:
     self.map_visualization = self.generate_rio_map(
       data_path,
       start_date="2022-01-01 00:00:00",
       end_date="2022-01-01 00:00:20")
-
-
+  
   # Reading and transforming Alerta Rio data
   def generate_rio_map(self, data_path, start_date, end_date):
     
     # Converting from string to datetime
     st_date = isoparse(start_date)
     ed_date = isoparse(end_date)
-
+    
     # Generating rio map without data
     (rio_map, grid_cells) = self._generate_base_map()
 
     try:
-      df_estacoes = self._get_data(data_path, st_date, ed_date)
-      df = df_estacoes[st_date]
-      print("aqui",df.columns)
+      # df = df_estacoes[st_date]
+      # print("aqui",df.columns)
       
-      return self._generate_map_with_real_data(st_date, rio_map)
+      return self._generate_map_with_real_data(data_path, st_date, ed_date, rio_map)
       
     except Exception as e:
       print(e)
@@ -60,14 +58,17 @@ class RioMap():
                 -22.9263982272677, 
                 -22.857229857519, 
                 -22.7880614877703, 
-                -22.7188931180216, -22.649724748272934]
+                -22.7188931180216, 
+                -22.649724748272934]
+
     lon_list = [-43.8906028271505, 
-                  -43.7697438637654, 
-                  -43.6488849003802,
-                  -43.5280259369951, 
-                  -43.4071669736099,
-                  -43.2863080102248,
-                  -43.1654490468397, -43.04835145732227]
+                -43.7697438637654, 
+                -43.6488849003802,
+                -43.5280259369951, 
+                -43.4071669736099,
+                -43.2863080102248,
+                -43.1654490468397, 
+                -43.04835145732227]
                   
     grid_cells = {}
 
@@ -99,7 +100,7 @@ class RioMap():
     return (rio_map, grid_cells)
 
   # Used to generate data for main view
-  def _get_data(self, data_path : str, st_date : datetime, ed_date : datetime) -> dict:
+  def _get_data(self, data_path : str, st_date : datetime, ed_date : datetime) -> dict[datetime, pd.DataFrame]:
     DATA_DIR = data_path
 
     # Each file records 20 seconds of obeservation
@@ -150,37 +151,34 @@ class RioMap():
       else:
         count += 1
         dic_date = dic_date + timedelta(0, 20)
-        
-    print(dataframe_dic.keys())
-    print(dataframe_dic.values())
-    print(dataframe_dic[dic_date])
+  
     return dataframe_dic
+  
 
+  def _generate_map_with_real_data(self, data_path: str, st_date: datetime, ed_date: datetime, rio_map: folium.Map):
 
-  def _generate_map_with_real_data(self, st_date: datetime, rio_map: folium.Map):
-    # Generating moving data
-    np.random.seed(3141592)
-    initial_data = np.random.normal(size=(100, 2)) * np.array([[0.1, 0.11]]) + np.array([[-22.99, -43.59]])
-    move_data = np.random.normal(size=(100, 2)) * 0.01
-    data = [(initial_data + move_data * i).tolist() for i in range(100)]
+    # Getting real data for generating map
+    df_estacoes = self._get_data(data_path, st_date, ed_date)
 
-    time_ = 0
-    N = len(data)
-    itensify_factor = 30
-    for time_entry in data:
-        time_ = time_+1
-        for row in time_entry:
-            weight = min(np.random.uniform()*(time_/(N))*itensify_factor, 1)
-            row.append(weight)
+    event_coordinates = []
+    for df in df_estacoes.keys():
+      dataframe = df_estacoes[df]
+      
+      event_lat = dataframe.loc[:, 'event_lat']
+      event_lon = df_estacoes[df].loc[:, 'event_lon']
 
-    time_index = [(st_date + k * timedelta(0, 20)).strftime("%d-%m-%Y, %H:%M:%S") for k in range(len(data))]
-    
-    hm = plugins.HeatMapWithTime(data, index=time_index, auto_play=True, max_opacity=0.6)
+      for (lat, lon) in zip(event_lat, event_lon):
+          event_coordinates.append([lat, lon])
+
+    time_index = [(st_date + k * timedelta(0, 20)).strftime("%d-%m-%Y, %H:%M:%S") for k in range(len(event_coordinates))]
+    print(event_coordinates[0])
+    hm = plugins.HeatMapWithTime(event_coordinates, index=time_index, auto_play=True, max_opacity=0.6)
     hm.add_to(rio_map)
     return rio_map
-
+  
 
   def _generate_map_with_mock(self, rio_map, grid_cells):
+
     df_estacoes = pd.read_csv(f'./{"src/static/estacoes_pluviometricas.csv"}')
     df_estacoes = df_estacoes.drop(columns=['Unnamed: 0'])
 
@@ -208,7 +206,6 @@ class RioMap():
     return ds['event_energy'].where(
         (ds['event_lat'] >= -24.0) & (ds['event_lat'] <= -22.5) & 
         (ds['event_lon'] >= -43.8) & (ds['event_lon'] <= -43.0))
-
 
   def _preparing_data(self, df):
     df.drop(df.columns[4:-1],
