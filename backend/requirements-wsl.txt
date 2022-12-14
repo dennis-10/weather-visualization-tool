@@ -40,3 +40,6 @@ Werkzeug==2.2.2
 matplotlib
 ffmpeg-python
 Flask-Cors==3.0.10
+xarray
+netcdf4
+h5netcdf
