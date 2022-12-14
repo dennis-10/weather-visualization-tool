@@ -32,9 +32,6 @@ class RioMap():
     (rio_map, grid_cells) = self._generate_base_map()
 
     try:
-      # df = df_estacoes[st_date]
-      # print("aqui",df.columns)
-      
       return self._generate_map_with_real_data(data_path, st_date, ed_date, rio_map)
       
     except Exception as e:
@@ -71,7 +68,7 @@ class RioMap():
                 -43.04835145732227]
                   
     grid_cells = {}
-
+    
     cell_idx = 1
     for j, _ in enumerate(lon_list):
       if j + 1 == len(lon_list):
@@ -98,7 +95,7 @@ class RioMap():
         folium.GeoJson(polygon).add_to(rio_map)
 
     return (rio_map, grid_cells)
-
+  
   # Used to generate data for main view
   def _get_data(self, data_path : str, st_date : datetime, ed_date : datetime) -> dict[datetime, pd.DataFrame]:
     DATA_DIR = data_path
@@ -106,7 +103,7 @@ class RioMap():
     # Each file records 20 seconds of obeservation
     seconds_dif = (ed_date - st_date).total_seconds()
     total_files = math.ceil(seconds_dif / 20)
-
+    
     st_year = st_date.year
     st_day = st_date.day
     st_hour = st_date.hour
@@ -135,7 +132,7 @@ class RioMap():
       if total_count < begin_file_number:
         total_count += 1
         continue
-
+      
       ds = xr.open_dataset(f"{file_path}/{file}")
 
       try:
@@ -161,17 +158,29 @@ class RioMap():
     df_estacoes = self._get_data(data_path, st_date, ed_date)
 
     event_coordinates = []
-    for df in df_estacoes.keys():
-      dataframe = df_estacoes[df]
+    for datetime_index in df_estacoes.keys():
+
+      dataframe = df_estacoes[datetime_index]
+      datetime_index = datetime_index + timedelta(0, 40, 0, 0, 3)
+      datetime_i = datetime_index
+      coord_list = []
+      while datetime_i < (datetime_index + timedelta(0, 20)):
+        
+        event_lat = dataframe.loc[(dataframe['event_time_offset'] >= datetime_i) & (dataframe['event_time_offset'] < (datetime_i + timedelta(0, 1))), 'event_lat'].to_list()
+        event_lon = dataframe.loc[(dataframe['event_time_offset'] >= datetime_i) & (dataframe['event_time_offset'] < (datetime_i + timedelta(0, 1))), 'event_lon'].to_list()
       
-      event_lat = dataframe.loc[:, 'event_lat']
-      event_lon = df_estacoes[df].loc[:, 'event_lon']
+        while (len(event_lat) + len(event_lon)) > 0:
+        
+          lat = event_lat.pop()          
+          lon = event_lon.pop() 
 
-      for (lat, lon) in zip(event_lat, event_lon):
-          event_coordinates.append([lat, lon])
+          coord_list.append([lat, lon])
 
-    time_index = [(st_date + k * timedelta(0, 20)).strftime("%d-%m-%Y, %H:%M:%S") for k in range(len(event_coordinates))]
-    print(event_coordinates[0])
+        event_coordinates.append(coord_list)
+        coord_list = []
+        datetime_i = datetime_i + timedelta(0, 1)
+    
+    time_index = [(st_date + k * timedelta(0, 1)).strftime("%d-%m-%Y, %H:%M:%S") for k in range(len(event_coordinates))]
     hm = plugins.HeatMapWithTime(event_coordinates, index=time_index, auto_play=True, max_opacity=0.6)
     hm.add_to(rio_map)
     return rio_map
@@ -223,5 +232,4 @@ class RioMap():
             inplace=True)
 
     df.set_index('time', inplace=True)
-    print(df)
     return df
