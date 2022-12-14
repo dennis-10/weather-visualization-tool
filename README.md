@@ -41,8 +41,7 @@ by CEFET/RJ CC course students.
 For running this project locally you will need to install:
 
 1. [Git](https://github.com/git/git)
-2. [Node.js](https://nodejs.org/en/)
-3. [Docker](https://www.docker.com/)
+2. [Docker](https://www.docker.com/)
 
 ```bash
 # Clone the repository
