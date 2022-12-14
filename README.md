@@ -66,9 +66,10 @@ docker run -i -t -p 5000:5000 weather-tool
 
 -
 
-## Architecture Diagram
+## Architecture and technologies
 
--
+WVTool was developed under the Client-Server architecture, using the Flask web micro-framework. Both the frontend and the backend were developed using Flask. The application was containerized with Docker. The main tool for displaying the map was the Folium library, based on the Leaflet library.
+
 
 ## Project Requirements
 
