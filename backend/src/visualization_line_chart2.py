@@ -7,8 +7,7 @@ from matplotlib import animation
 #data inicial e final com horario inicial e final trazidos do input
 startDate = "01/01/2022 00:00:00"
 endDate = "01/01/2022 04:00:00"
-selectedCell = 33
-
+selectedCell2 = 34
 
 #procura a pasta definida pelo path que o usuário colocou
 folder = './src/static/dados_pluviometros'
@@ -83,7 +82,7 @@ celulas = {
     49: ''
 }
 
-stations = celulas[selectedCell]
+stations = celulas[selectedCell2]
 
 #se nao tiver estacao na celula nao vai precisar gerar grafico
 if stations == "":
@@ -156,7 +155,7 @@ else:
 
 
 #dados para o grafico
-title = 'Grid Cell: ' + str(selectedCell)
+title = 'Grid Cell: ' + str(selectedCell2)
 x = np.arange(1,len(volume)+1,1)
 y = volume
 tfinal = max(x)
@@ -172,5 +171,5 @@ def animate(i):
 
 #plot do grafico
 
-anim = animation.FuncAnimation(fig, animate, frames = len(x) + 1, interval = 1000, blit = False, repeat=False)
-anim = anim.to_html5_video()
+anim2 = animation.FuncAnimation(fig, animate, frames = len(x) + 1, interval = 1000, blit = False, repeat=False)
+anim2 = anim2.to_html5_video()

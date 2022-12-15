@@ -207,6 +207,7 @@ class RioMap():
             color='red',
             fill_opacity=0.7
         ).add_to(rio_map)
+        i+=1
 
     return rio_map
 

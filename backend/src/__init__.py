@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 from flask_swagger_ui import get_swaggerui_blueprint
 from src.alerta_rio_service import AlertaRioService
 from src.visualization_line_chart import anim
+from src.visualization_line_chart2 import anim2
 from src.visualization_map import RioMap
 from flask_cors import CORS
 
@@ -19,7 +20,7 @@ def index():
     "index.html",
     map=rio_map.map_visualization._repr_html_(), 
     chart1=anim, 
-    chart2=anim)
+    chart2=anim2)
 
 # Endpoint for setting the data path
 @app.route('/map', methods=["GET"])
