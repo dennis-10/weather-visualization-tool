@@ -7,7 +7,7 @@ from matplotlib import animation
 #data inicial e final com horario inicial e final trazidos do input
 startDate = "01/01/2022 00:00:00"
 endDate = "01/01/2022 04:00:00"
-selectedCell2 = 34
+selectedCell2 = 16
 
 #procura a pasta definida pelo path que o usuário colocou
 folder = './src/static/dados_pluviometros'

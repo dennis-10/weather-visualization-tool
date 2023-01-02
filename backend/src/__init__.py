@@ -1,10 +1,12 @@
 from flask import Flask, render_template, request
 from flask_swagger_ui import get_swaggerui_blueprint
 from src.alerta_rio_service import AlertaRioService
-from src.visualization_line_chart import anim
-from src.visualization_line_chart2 import anim2
+#from src.visualization_line_chart import anim
 from src.visualization_map import RioMap
+from src.visualization_line_chart import Grafico
 from flask_cors import CORS
+from src.processing_data import Observacao
+from matplotlib import animation
 
 # Starting Flask app
 app = Flask(__name__)
@@ -13,14 +15,50 @@ CORS(app)
 # Instantiate map object
 rio_map = RioMap()
 
+
 # Endpoint for main visualization
 @app.route('/')
 def index():
   return render_template(
     "index.html",
-    map=rio_map.map_visualization._repr_html_(), 
-    chart1=anim, 
-    chart2=anim2)
+    map=rio_map.map_visualization._repr_html_()
+    #chart1=anim, 
+    #chart2=anim2
+    )
+
+# Endpoint for setting the data path
+@app.route('/chart', methods=["GET"])
+def processChart():
+  try:
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    start_hour = request.args.get('start_hour')
+    end_hour = request.args.get('end_hour')
+    select1 = request.args.get('cel_number1')
+    select2 = request.args.get('cel_number2')
+
+    intervalo = Observacao(start_date, end_date, start_hour, end_hour)
+    sd = intervalo.formataDataInicio()
+    ed = intervalo.formataDataFim()
+    line_chart = Grafico(num_celula=select1, data_inicio=sd, data_fim=ed, 
+                hora_inicio=intervalo.hora_inicio, hora_fim=intervalo.hora_fim)
+    line_chart.processaObservacao()
+    line_chart2 = Grafico(num_celula=select2, data_inicio=sd, data_fim=ed, 
+                hora_inicio=intervalo.hora_inicio, hora_fim=intervalo.hora_fim)
+    line_chart2.processaObservacao()
+    animation = line_chart.geraGrafico()
+    animation2 = line_chart2.geraGrafico()
+    
+    
+    return render_template(
+      "index.html",
+      map=rio_map.map_visualization._repr_html_(),
+      chart1="<span> Sem nada </span>",
+      chart2="<span> Sem nada </span>"
+    )
+
+  except Exception as error:
+    raise error
 
 # Endpoint for setting the data path
 @app.route('/map', methods=["GET"])

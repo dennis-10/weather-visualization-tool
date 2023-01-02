@@ -15,7 +15,7 @@
     <body id="map">
         <nav class="navbar navbar-expand-lg bg-light">
             <div class="container-fluid">
-              <a class="navbar-brand mx-auto" href="index.html"><img src="{{url_for('static', filename='logoWVT.png')}}" class="rounded" alt="logo" height="70" width="350"></a>
+              <a class="navbar-brand mx-auto" href="/"><img src="{{url_for('static', filename='logoWVT.png')}}" class="rounded" alt="logo" height="70" width="350"></a>
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
@@ -174,6 +174,7 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
         
         <script>
+            /*popular select boxes*/
             var select = '<option >select</option>';
             for (i=1;i<=49;i++){
                 select += '<option val=' + i + '>' + i + '</option>';
@@ -184,34 +185,44 @@
             const verify = () => {
                 var e = document.getElementById("variable");
                 var text = e.options[e.selectedIndex].text; 
+
                 if (text == 'Reflectivity'){
                     alert("Não implementado!");
                     return false
                 }
+
                 if (text == 'Select'){
                     alert("Escolha uma variável meteorológica");
                     return false
                 }
-                var grid1 = document.getElementById("s1")
-                var grid2 = document.getElementById("s2")
+
+                var grid1 = document.getElementById("s1");
+                var grid2 = document.getElementById("s2");
+
                 var text_grid1 = grid1.options[grid1.selectedIndex].text;
                 var text_grid2 = grid2.options[grid2.selectedIndex].text;
+
                 if (text_grid1 == 'select'){
                     alert("Escolha uma célula para o primeiro gráfico!");
                     return false
                 }
+
                 if (text_grid2 == 'select'){
                     alert("Escolha uma célula para o segundo gráfico!");
                     return false
                 }
-                var dataInicio = document.getElementById("startDate")
-                var horaInicio = document.getElementById("startHour")
-                var dataFim = document.getElementById("endDate")
-                var horaFim = document.getElementById("endHour")
-                if (dataInicio.value=='' || horaInicio.value=='' || dataFim.value=='' || horaFim.value==''){
+
+                var dataInicio = document.getElementById("startDate").value;
+                var horaInicio = document.getElementById("startHour").value;
+                var dataFim = document.getElementById("endDate").value;
+                var horaFim = document.getElementById("endHour").value;
+
+                if (dataInicio == '' || horaInicio == '' || dataFim == '' || horaFim == ''){
                     alert('Preencha todos os campos de data e hora!');
                     return false
                 }
+
+                getChartParams(dataInicio, horaInicio, dataFim, horaFim, text_grid1, text_grid2);
                 return true
             }
 
@@ -229,6 +240,18 @@
                 if (text == '.png' || text =='.gif')
                     alert("Não implementado!")
             }
+
+            async function getChartParams(startDate, startHour, endDate, endHour, sel1, sel2) {
+                await fetch(`http://localhost:5000/chart?start_date=${startDate}&end_date=${endDate}
+                        &start_hour=${startHour}&end_hour=${endHour}&cel_number1=${sel1}&cel_number2=${sel2}`, {
+                    "method": "GET",
+                    "headers": {
+                        'Content-type': 'application/json;'
+                    }
+                })
+                
+            }
+
             var currentdate = new Date();
 
             var startDate = currentdate.getFullYear() +
