@@ -39,6 +39,7 @@ class RioMap():
     (rio_map, grid_cells) = self._generate_base_map()
 
     try:
+      rio_map = self._generate_map_with_pluviometric(rio_map, grid_cells)
       return self._generate_map_with_real_data(data_path, st_date, ed_date, rio_map)
       
     except Exception as e:
@@ -46,7 +47,7 @@ class RioMap():
       print("Exception while getting data, changing the date might solve.")
       print("Getting mocked data instead.")
 
-      return self._generate_map_with_mock(rio_map, grid_cells)
+      return self._generate_map_with_pluviometric(rio_map, grid_cells)
           
 
   def _generate_base_map(self):
@@ -106,7 +107,7 @@ class RioMap():
   # Used to generate data for main view
   def _get_data(self, data_path : str, st_date : datetime, ed_date : datetime) -> dict[datetime, pd.DataFrame]:
     DATA_DIR = data_path
-
+  
     # Each file records 20 seconds of obeservation
     seconds_dif = (ed_date - st_date).total_seconds()
     total_files = math.ceil(seconds_dif / 20)
@@ -193,7 +194,7 @@ class RioMap():
     return rio_map
   
 
-  def _generate_map_with_mock(self, rio_map, grid_cells):
+  def _generate_map_with_pluviometric(self, rio_map, grid_cells):
 
     df_estacoes = pd.read_csv(f'./{"src/static/estacoes_pluviometricas.csv"}')
     df_estacoes = df_estacoes.drop(columns=['Unnamed: 0'])
