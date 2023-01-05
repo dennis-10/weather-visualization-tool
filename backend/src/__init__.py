@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, make_response
 from flask_swagger_ui import get_swaggerui_blueprint
 from src.alerta_rio_service import AlertaRioService
 #from src.visualization_line_chart import anim
@@ -14,7 +14,6 @@ CORS(app)
 
 # Instantiate map object
 rio_map = RioMap()
-
 
 # Endpoint for main visualization
 @app.route('/')
@@ -46,16 +45,9 @@ def processChart():
     line_chart2 = Grafico(num_celula=select2, data_inicio=sd, data_fim=ed, 
                 hora_inicio=intervalo.hora_inicio, hora_fim=intervalo.hora_fim)
     line_chart2.processaObservacao()
-    animation = line_chart.geraGrafico()
-    animation2 = line_chart2.geraGrafico()
+    animations = line_chart.geraGrafico() + line_chart2.geraGrafico()
     
-    
-    return render_template(
-      "index.html",
-      map=rio_map.map_visualization._repr_html_(),
-      chart1="<span> Sem nada </span>",
-      chart2="<span> Sem nada </span>"
-    )
+    return make_response(animations)
 
   except Exception as error:
     raise error

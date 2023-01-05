@@ -12,8 +12,6 @@ import os
 import numpy as np
 from datetime import datetime, timedelta
 
-
-
 #Classe Mapa
 #geraGrid()
 #geraMapa()
