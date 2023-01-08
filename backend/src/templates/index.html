@@ -62,7 +62,7 @@
                 </div>
                 <div class="modal-body">
                     <label>File's path: </label>
-                    <input id="path-input" type="text" xclass="form-control" placeholder="e.g. C:\User\Desktop\dataINEA" aria-label="Username" aria-describedby="basic-addon1">
+                    <input id="path-input" value="./src/static/satelite_data" type="text" xclass="form-control" placeholder="e.g. C:\User\Desktop\dataINEA" aria-label="Username" aria-describedby="basic-addon1">
                 </div>
                 <div class="modal-footer">
                     <button onclick="getView()" type="button" class="btn btn-success" data-bs-dismiss="modal">Apply</button>
@@ -235,6 +235,7 @@
                 alert(path)
 
                 getChartParams(dataInicio, horaInicio, dataFim, horaFim, text_grid1, text_grid2, path);
+                getView(dataInicio, horaInicio, dataFim, horaFim);
                 /*getChartParams(dataInicio, horaInicio, dataFim, horaFim, text_grid1, text_grid2, path);*/
                 return true
             }
@@ -259,7 +260,7 @@
                 let oldGrid1 = document.getElementById("grid-1");
                 let newGrid1 = document.createElement('div');
                 newGrid1.setAttribute("id", "grid-1")
-
+                
                 let oldGrid2 = document.getElementById("grid-2");
                 let newGrid2 = document.createElement('div');
                 newGrid2.setAttribute("id", "grid-2")
@@ -300,7 +301,10 @@
                 ":" + "00" +
                 ":" + "15";
             
-            const getView = () => {
+            const getView = (startDate, startHour, endDate, endHour) => {
+
+                startDate = startDate + " " + startHour + ":00"
+                endDate = endDate + " " + endHour + ":00"
 
                 // Get the path to the data
                 let path = document.getElementById("path-input").value;
@@ -309,10 +313,6 @@
                 let oldMap = document.getElementById("rio_map");
                 let newMap = document.createElement('div');
                 newMap.setAttribute("id", "rio_map")
-                
-                // Saves the date and time states to be loaded
-                let startDate = document.getElementById('startDate').value;
-                let endDate = document.getElementById('endDate').value;
                 
                 fetch(`http://localhost:5000/map?data_path=${path}&start_date=${startDate}&end_date=${endDate}`, {
                     "method": "GET",

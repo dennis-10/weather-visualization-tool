@@ -65,7 +65,7 @@ def set_data_path():
     data_path = request.args.get('data_path')
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
-
+   
     rio_map.generate_rio_map(data_path, start_date, end_date)
 
     return rio_map.map_visualization._repr_html_()
