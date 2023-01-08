@@ -21,12 +21,8 @@ class Grafico(Observacao):
 
     def processaObservacao(self):
 
-        #folder = './src/static/dados_pluviometros'
-        #folder = "C:/Users/rapha/Desktop/DadosWVT/"
-        #folder = os.path.abspath(self.path)
-        folder=self.path
-        print(os.getcwd())
-        print(folder)
+        folder = './src/static/dados_pluviometros'
+
         if os.path.exists(folder):
             if len(os.listdir(folder)) == 0:
                 #retornar mensagem para o frontend

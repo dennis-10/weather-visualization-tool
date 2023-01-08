@@ -16,6 +16,28 @@ from datetime import datetime, timedelta
 #geraMapa()
 #processaObservacao()
 
+#DEFINIR SOMENTE UM DIA
+
+#Data inicial e final - e hora inicial e final
+#verificar o ano: existe a pasta do ano?
+#verificar o dia: existe a pasta do dia? 1-365
+#verificar a hora: existe a pasta da hora? 00 - 23
+#verificar se existe o intervalo de hora (15 min tem 45 intervalos de 20s - 1h tem 180)
+#OR_GLM-L2-LCFA_G16_s20220010000000_ primeiro arquivo
+
+#Diferença entre as horas 
+#horaFinal - horaInicial em minutos, multiplicar por 60 /20
+# o resultado vai ser o numero de arquivos a serem abertos
+#percorre as pastas das horas a partir do arquivo inicial
+#acumular e somar todos os valores de 45 em 45 arquivos
+#tira a média
+#faz plot desse intervalo de 15min
+
+
+#se existir entao 
+
+
+
 class RioMap():
 
   # Class constructor
