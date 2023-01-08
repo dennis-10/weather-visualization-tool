@@ -9,7 +9,6 @@ from shapely.geometry import Polygon
 from dateutil.parser import isoparse
 import xarray as xr
 import os
-import numpy as np
 from datetime import datetime, timedelta
 
 #Classe Mapa
@@ -39,14 +38,13 @@ class RioMap():
     try:
       rio_map = self._generate_map_with_pluviometric(rio_map, grid_cells)
       return self._generate_map_with_real_data(data_path, st_date, ed_date, rio_map)
-      
+    
     except Exception as e:
       print(e)
       print("Exception while getting data, changing the date might solve.")
       print("Getting mocked data instead.")
 
       return self._generate_map_with_pluviometric(rio_map, grid_cells)
-          
 
   def _generate_base_map(self):
     rio_map = folium.Map([-22.925778948753702, -43.489029909370046], zoom_start=10, tiles='cartodbpositron')
@@ -105,7 +103,7 @@ class RioMap():
   # Used to generate data for main view
   def _get_data(self, data_path : str, st_date : datetime, ed_date : datetime) -> dict[datetime, pd.DataFrame]:
     DATA_DIR = data_path
-  
+
     # Each file records 20 seconds of obeservation
     seconds_dif = (ed_date - st_date).total_seconds()
     total_files = math.ceil(seconds_dif / 20)
@@ -134,7 +132,7 @@ class RioMap():
     dataframe_dic = dict()
     total_count, count = (1,1)
     for file in os.listdir(file_path):
-
+      
       if total_count < begin_file_number:
         total_count += 1
         continue
@@ -154,9 +152,8 @@ class RioMap():
       else:
         count += 1
         dic_date = dic_date + timedelta(0, 20)
-  
+    
     return dataframe_dic
-  
 
   def _generate_map_with_real_data(self, data_path: str, st_date: datetime, ed_date: datetime, rio_map: folium.Map):
 
@@ -190,7 +187,6 @@ class RioMap():
     hm = plugins.HeatMapWithTime(event_coordinates, index=time_index, auto_play=True, max_opacity=0.6)
     hm.add_to(rio_map)
     return rio_map
-  
 
   def _generate_map_with_pluviometric(self, rio_map, grid_cells):
 
@@ -217,11 +213,11 @@ class RioMap():
 
     return rio_map
 
-
   def _filter_coordinates(self, ds: xr.Dataset):
     return ds['event_energy'].where(
         (ds['event_lat'] >= -24.0) & (ds['event_lat'] <= -22.5) & 
-        (ds['event_lon'] >= -43.8) & (ds['event_lon'] <= -43.0))
+        (ds['event_lon'] >= -43.8) & (ds['event_lon'] <= -43.0),
+        drop=True)
 
   def _preparing_data(self, df):
     df.drop(df.columns[4:-1],

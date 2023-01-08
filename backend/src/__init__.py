@@ -29,6 +29,7 @@ def index():
 @app.route('/chart', methods=["GET"])
 def processChart():
   try:
+    
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
     start_hour = request.args.get('start_hour')
@@ -38,14 +39,18 @@ def processChart():
     path = request.args.get('path')
 
     intervalo = Observacao(start_date, end_date, start_hour, end_hour)
+
     sd = intervalo.formataDataInicio()
     ed = intervalo.formataDataFim()
+    
     line_chart = Grafico(num_celula=select1, data_inicio=sd, data_fim=ed, 
                 hora_inicio=intervalo.hora_inicio, hora_fim=intervalo.hora_fim, path=path)
     line_chart.processaObservacao()
+    
     line_chart2 = Grafico(num_celula=select2, data_inicio=sd, data_fim=ed, 
                 hora_inicio=intervalo.hora_inicio, hora_fim=intervalo.hora_fim, path=path)
     line_chart2.processaObservacao()
+    
     animations = line_chart.geraGrafico() + line_chart2.geraGrafico()
     
     return make_response(animations)
