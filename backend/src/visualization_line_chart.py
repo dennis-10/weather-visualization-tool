@@ -21,7 +21,7 @@ class Grafico(Observacao):
 
     def processaObservacao(self):
 
-        folder = './src/static/dados_pluviometros'
+        folder = './src/static/data/dados_pluviometros'
 
         if os.path.exists(folder):
             if len(os.listdir(folder)) == 0:

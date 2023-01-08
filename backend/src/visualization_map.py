@@ -41,7 +41,7 @@ from datetime import datetime, timedelta
 class RioMap():
 
   # Class constructor
-  def __init__(self, data_path="./src/static/satelite_data") -> None:
+  def __init__(self, data_path="./src/static/data/satelite_data") -> None:
     self.map_visualization = self.generate_rio_map(
       data_path,
       start_date="2022-01-01 00:00:00",
