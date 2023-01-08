@@ -221,7 +221,21 @@
                     alert('Preencha todos os campos de data e hora!');
                     return false
                 }
-                getChartParams(dataInicio, horaInicio, dataFim, horaFim, text_grid1, text_grid2);
+
+                if (new Date(dataFim) < new Date(dataInicio)){
+                    alert("Data de inicio maior que data de fim!");
+                    return false
+                }
+
+                var path = document.getElementById("path-input").value
+                if (path==""){
+                    alert("O Caminho para os dados não foi especificado");
+                    return false
+                }
+                alert(path)
+
+                getChartParams(dataInicio, horaInicio, dataFim, horaFim, text_grid1, text_grid2, path);
+                /*getChartParams(dataInicio, horaInicio, dataFim, horaFim, text_grid1, text_grid2, path);*/
                 return true
             }
             
@@ -240,7 +254,7 @@
                     alert("Não implementado!")
             }
 
-            async function getChartParams(startDate, startHour, endDate, endHour, sel1, sel2) {
+            async function getChartParams(startDate, startHour, endDate, endHour, sel1, sel2, path) {
                 
                 let oldGrid1 = document.getElementById("grid-1");
                 let newGrid1 = document.createElement('div');
@@ -251,7 +265,7 @@
                 newGrid2.setAttribute("id", "grid-2")
                 
                 await fetch(`http://localhost:5000/chart?start_date=${startDate}&end_date=${endDate}
-                    &start_hour=${startHour}&end_hour=${endHour}&cel_number1=${sel1}&cel_number2=${sel2}`, {
+                    &start_hour=${startHour}&end_hour=${endHour}&cel_number1=${sel1}&cel_number2=${sel2}&path=${path}`, {
                     "method": "GET",
                     "headers": {
                         'Content-type': 'application/json;'
