@@ -71,7 +71,7 @@ docker-compose up
 ![workflow](https://i.imgur.com/dQhte2C.png)
 
 ## Class Diagram
-[Class Diagram](https://github.com/dennis-10/weather-visualization-tool/blob/dev/docs/assets/Diagrama%20de%20Classes%20WVTool.pdf)
+[Class Diagram](https://github.com/dennis-10/weather-visualization-tool/blob/dev/docs/assets/Diagrama%20de%20Classe.pdf)
 
 ## Architecture and technologies
 
