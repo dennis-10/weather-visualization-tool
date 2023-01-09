@@ -211,6 +211,7 @@ class RioMap():
         print('ValueError')
 
       df = ds.to_dataframe()
+      ds.close()
       dataframe_dic[dic_date] = df
 
       if count == total_files:

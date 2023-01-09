@@ -11,10 +11,9 @@ from src.processing_data import Observacao
 
 
 class Grafico(Observacao):
-    def __init__(self, num_celula, data_inicio, data_fim, hora_inicio, hora_fim, path, titulo="", eixoX="", eixoY=""):
+    def __init__(self, num_celula, data_inicio, data_fim, hora_inicio, hora_fim, titulo="", eixoX="", eixoY=""):
         super().__init__(data_inicio, data_fim, hora_inicio, hora_fim)
         self.num_celula = num_celula
-        self.path = path
         self.titulo = titulo
         self.eixoX = eixoX
         self.eixoY = eixoY

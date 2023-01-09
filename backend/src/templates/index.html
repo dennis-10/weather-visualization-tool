@@ -62,10 +62,10 @@
                 </div>
                 <div class="modal-body">
                     <label>File's path: </label>
-                    <input id="path-input" value="./src/static/satelite_data" type="text" xclass="form-control" placeholder="e.g. C:\User\Desktop\dataINEA" aria-label="Username" aria-describedby="basic-addon1">
+                    <input id="path-input"  type="text" xclass="form-control" placeholder="path is defined via command line" aria-label="Username" aria-describedby="basic-addon1">
                 </div>
                 <div class="modal-footer">
-                    <button onclick="getView()" type="button" class="btn btn-success" data-bs-dismiss="modal">Apply</button>
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Apply</button>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -227,13 +227,13 @@
                     return false
                 }
 
-                var path = document.getElementById("path-input").value
+                /*var path = document.getElementById("path-input").value
                 if (path==""){
                     alert("O Caminho para os dados não foi especificado");
                     return false
-                }
+                }*/
 
-                getChartParams(dataInicio, horaInicio, dataFim, horaFim, text_grid1, text_grid2, path);
+                getChartParams(dataInicio, horaInicio, dataFim, horaFim, text_grid1, text_grid2);
                 getView(dataInicio, horaInicio, dataFim, horaFim);
                 /*getChartParams(dataInicio, horaInicio, dataFim, horaFim, text_grid1, text_grid2, path);*/
                 return true
@@ -254,7 +254,7 @@
                     alert("Não implementado!")
             }
 
-            async function getChartParams(startDate, startHour, endDate, endHour, sel1, sel2, path) {
+            async function getChartParams(startDate, startHour, endDate, endHour, sel1, sel2) {
                 
                 let oldGrid1 = document.getElementById("grid-1");
                 let newGrid1 = document.createElement('div');
@@ -265,7 +265,7 @@
                 newGrid2.setAttribute("id", "grid-2")
                 
                 await fetch(`http://localhost:5000/chart?start_date=${startDate}&end_date=${endDate}
-                    &start_hour=${startHour}&end_hour=${endHour}&cel_number1=${sel1}&cel_number2=${sel2}&path=${path}`, {
+                    &start_hour=${startHour}&end_hour=${endHour}&cel_number1=${sel1}&cel_number2=${sel2}`, {
                     "method": "GET",
                     "headers": {
                         'Content-type': 'application/json;'
