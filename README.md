@@ -65,6 +65,11 @@ docker-compose build --build-arg SOURCE="{LOCAL_DATA_PATH}"
 docker-compose up
 
 ```
+- Drop data in local folder
+- Select meteorological variable
+- Set Initial Date and Hour and End Date and Hour (minutes must be 00, 15, 30 or 45)
+- Choose grid cell number
+- Press Play button
 
 ## Workflow
 
