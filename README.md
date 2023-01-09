@@ -56,10 +56,10 @@ cd backend
 # Build the Dockerfile for generating an image
 docker-compose build --build-arg SOURCE="{LOCAL_DATA_PATH}"
 
-- LOCAL_DATA_PATH must be a path with data.  C:\Users\Desktop\WVT e.g. 
+- LOCAL_DATA_PATH must be a path with data.  C:/Users/user_name/Desktop/WVT e.g. 
 - Inside LOCAL_DATA_PATH root folder must contain 2 subfolders: 
-  * "dados_pluviometros" : pluviometric stations data
-  * "satelite_data" : satelite's data with subfolders: YEAR>>DAY_OF_YEAR>>HOUR_OF_DAY
+   "dados_pluviometros" : pluviometric stations data
+   "satelite_data" : unziped satelite's data with subfolders YEAR>>DAY_OF_YEAR>>HOUR_OF_DAY
 
 # Run the Docker container
 docker-compose up
@@ -85,7 +85,7 @@ The original requirement document can be found in this [link](https://github.com
 
 ### Functional Requirements
 
-1. As a background resource, the app must allow users to configurate the local data repository.
+1. As a background resource, the app must allow users to configurate the local data repository. * THIS FR IS SET VIA COMMAND LINE
    1. The data must not be alterated in comparison to its font.
 2. The app must consume the weather data in local repository.
 3. The user can choose the weather variable.
