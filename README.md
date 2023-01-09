@@ -54,24 +54,30 @@ cd weather-visualization-tool
 cd backend
 
 # Build the Dockerfile for generating an image
-docker build . -t weather-tool
+docker-compose build --build-arg SOURCE="{LOCAL_DATA_PATH}"
+
+- LOCAL_DATA_PATH must be a path with data.  C:/Users/user_name/Desktop/WVT e.g. 
+- Inside LOCAL_DATA_PATH root folder must contain 2 subfolders: 
+   "dados_pluviometros" : pluviometric stations data
+   "satelite_data" : unziped satelite's data with subfolders YEAR>>DAY_OF_YEAR>>HOUR_OF_DAY
 
 # Run the Docker container
-docker run -i -t -p 5000:5000 weather-tool
+docker-compose up
 
 ```
 
 ## Workflow
 
--
+![workflow](https://i.imgur.com/dQhte2C.png)
 
 ## Class Diagram
-[Diagram](https://github.com/dennis-10/weather-visualization-tool/blob/dev/docs/assets/Diagrama%20de%20Classes%20WVTool.pdf)
+[Class Diagram](https://github.com/dennis-10/weather-visualization-tool/blob/dev/docs/assets/Diagrama%20de%20Classes%20WVTool.pdf)
 
 ## Architecture and technologies
 
 WVTool was developed under the Client-Server architecture, using the Flask web micro-framework. Both the frontend and the backend were developed using Flask. The application was containerized with Docker. The main tool for displaying the map was the Folium library, based on the Leaflet library.
 
+[Architecture Diagram](https://github.com/dennis-10/weather-visualization-tool/blob/dev/docs/assets/Diagrama%20de%20Arquitetura.pdf)
 
 ## Project Requirements
 
@@ -79,7 +85,7 @@ The original requirement document can be found in this [link](https://github.com
 
 ### Functional Requirements
 
-1. As a background resource, the app must allow users to configurate the local data repository.
+1. As a background resource, the app must allow users to configurate the local data repository. * THIS FR IS SET VIA COMMAND LINE
    1. The data must not be alterated in comparison to its font.
 2. The app must consume the weather data in local repository.
 3. The user can choose the weather variable.
@@ -113,17 +119,6 @@ The original requirement document can be found in this [link](https://github.com
 4. The first task must be done as a read me markdown file on github.
 5. The tasks 1.2, 1.3 and 1.4 must be in docs directiory.
 
-## Schedule
-
--
-
-### Schedule Task Legend
-
--
-
-## Credits
-
--
 
 ## License
 
