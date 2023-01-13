@@ -5,10 +5,6 @@ from matplotlib import animation
 from src.processing_data import Observacao
 
 
-#Classe Grafico
-#processaObservacao()
-#geraGrafico()
-
 
 class Grafico(Observacao):
     def __init__(self, num_celula, data_inicio, data_fim, hora_inicio, hora_fim, titulo="", eixoX="", eixoY=""):
@@ -103,6 +99,7 @@ class Grafico(Observacao):
             exit()
 
         volume = []
+        dates = []
         first = True
 
         #busca dos arquivos no path do usuario
@@ -127,6 +124,7 @@ class Grafico(Observacao):
                         while stop==False:
                             if first:
                                 volume.append(float(line[2]))
+                                dates.append(str(line[1]))
                             else:
                                 volume[register] = volume[register] + float(line[2])
                                 register+=1
@@ -135,6 +133,7 @@ class Grafico(Observacao):
                             if line[0]==endDay and line[1]==horaFim:
                                 if first:
                                     volume.append(float(line[2]))
+                                    dates.append(str(line[1]))
                                 else:
                                     volume[register] = volume[register] + float(line[2])
                                     register+=1
@@ -160,22 +159,25 @@ class Grafico(Observacao):
                 if line[0]==startDay and line[1]==horaInicio:
                     while stop==False:
                         volume.append(float(line[2]))
+                        dates.append(str(line[1]))
                         i+=1
                         line = lines[i].split()
                         if line[0]==endDay and line[1]==horaFim:
                             volume.append(float(line[2]))
+                            dates.append(str(line[1]))
                             stop=True
             fileStart.close()
         
         self.eixoY = volume
+        self.eixoX = dates
 
     def geraGrafico(self):
         self.titulo = 'Grid Cell: ' + str(self.num_celula)
-        self.eixoX = np.arange(1,len(self.eixoY)+1,1)
+        #self.eixoX = np.arange(1,len(self.eixoY)+1,1)
         x = self.eixoX
         y = self.eixoY
-        tfinal = max(x)
-        x0 = 1
+        tfinal = x[-1]
+        x0 = x[0]
         fig, ax = plt.subplots(1, 1, figsize = (6, 3))
 
         def animate(i):

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request, make_response, jsonify
 from flask_swagger_ui import get_swaggerui_blueprint
 from src.alerta_rio_service import AlertaRioService
 #from src.visualization_line_chart import anim
@@ -64,10 +64,18 @@ def set_data_path():
     data_path = request.args.get('data_path')
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
-   
-    rio_map.generate_rio_map(data_path, start_date, end_date)
+    start_hour = request.args.get('start_hour')
+    end_hour = request.args.get('end_hour')
 
-    return rio_map.map_visualization._repr_html_()
+    intervalo = Observacao(start_date, end_date, start_hour, end_hour)
+
+    sd = intervalo.formataDataInicio()
+    ed = intervalo.formataDataFim()
+
+    mapR = rio_map.generate_rio_map(data_path, sd, ed, start_hour, end_hour)
+
+    #return mapR._repr_html_()
+    return mapR._repr_html_()
   except Exception as error:
     raise error
 

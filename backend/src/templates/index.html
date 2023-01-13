@@ -302,9 +302,6 @@
             
             const getView = (startDate, startHour, endDate, endHour) => {
 
-                startDate = startDate + " " + startHour + ":00"
-                endDate = endDate + " " + endHour + ":00"
-
                 // Get the path to the data
                 let path = document.getElementById("path-input").value;
                 
@@ -313,7 +310,8 @@
                 let newMap = document.createElement('div');
                 newMap.setAttribute("id", "rio_map")
                 
-                fetch(`http://localhost:5000/map?data_path=${path}&start_date=${startDate}&end_date=${endDate}`, {
+                fetch(`http://localhost:5000/map?data_path=${path}&start_date=${startDate}&start_hour=${startHour}
+                &end_date=${endDate}&end_hour=${endHour}`, {
                     "method": "GET",
                     "headers": {
                         'Content-type': 'application/json;'

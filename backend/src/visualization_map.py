@@ -10,56 +10,36 @@ from dateutil.parser import isoparse
 import xarray as xr
 import os
 from datetime import datetime, timedelta
-
-#Classe Mapa
-#geraGrid()
-#geraMapa()
-#processaObservacao()
-
-#DEFINIR SOMENTE UM DIA
-
-#Data inicial e final - e hora inicial e final
-#verificar o ano: existe a pasta do ano?
-#verificar o dia: existe a pasta do dia? 1-365
-#verificar a hora: existe a pasta da hora? 00 - 23
-#verificar se existe o intervalo de hora (15 min tem 45 intervalos de 20s - 1h tem 180)
-#OR_GLM-L2-LCFA_G16_s20220010000000_ primeiro arquivo
-
-#Diferença entre as horas 
-#horaFinal - horaInicial em minutos, multiplicar por 60 /20
-# o resultado vai ser o numero de arquivos a serem abertos
-#percorre as pastas das horas a partir do arquivo inicial
-#acumular e somar todos os valores de 45 em 45 arquivos
-#tira a média
-#faz plot desse intervalo de 15min
-
-
-#se existir entao 
+from src.processing_data import Observacao
+import time
 
 
 
-class RioMap():
+class RioMap(Observacao):
 
   # Class constructor
-  def __init__(self, data_path="./src/static/data/satelite_data") -> None:
+  def __init__(self, data_inicio="", data_fim="", hora_inicio="", hora_fim="", data_path="./src/static/data/satelite_data") -> None:
+    super().__init__(data_inicio, data_fim, hora_inicio, hora_fim)
     self.map_visualization = self.generate_rio_map(
       data_path,
-      start_date="2022-01-01 00:00:00",
-      end_date="2022-01-01 00:15:00")
+      start_date="2022-01-01",
+      end_date="2022-01-01",
+      st_hour="00:00",
+      ed_hour = "00:15")
   
   # Reading and transforming Alerta Rio data
-  def generate_rio_map(self, data_path, start_date, end_date):
+  def generate_rio_map(self, data_path, start_date, end_date, st_hour, ed_hour):
     
     # Converting from string to datetime
-    st_date = isoparse(start_date)
-    ed_date = isoparse(end_date)
+    #st_date = isoparse(start_date)
+    #ed_date = isoparse(end_date)
 
     # Generating rio map without data
     (rio_map, grid_cells) = self._generate_base_map()
 
     try:
       rio_map = self._generate_map_with_pluviometric(rio_map, grid_cells)
-      return self._generate_map_with_real_data(data_path, st_date, ed_date, rio_map)
+      return self._generate_map_with_real_data(data_path, start_date, end_date, st_hour, ed_hour, rio_map)
     
     except Exception as e:
       print(e)
@@ -122,11 +102,14 @@ class RioMap():
 
     return (rio_map, grid_cells)
 
-  def _generate_map_with_real_data(self, data_path: str, st_date: datetime, ed_date: datetime, rio_map: folium.Map):
+  def _generate_map_with_real_data(self, data_path, st_date, ed_date, st_hour, ed_hour, rio_map: folium.Map):
 
     # Getting real data for generating map
-    df_estacoes = self._get_data(data_path, st_date, ed_date)
+    df_estacoes = self._get_data(data_path, st_date, ed_date, st_hour, ed_hour)
    
+    i_data = st_date + " " + st_hour + ":00"
+    st_date = time.mktime(datetime.strptime(i_data, "%d/%m/%Y %H:%M:%S").timetuple())
+
     event_coordinates = []
     coord_list = []
     file_count = 1
@@ -155,46 +138,60 @@ class RioMap():
       else:
         file_count += 1
       # datetime_i = datetime_i + timedelta(0, 1)
+    event_coordinates = [[[-23.0395461 , -43.66783523], [-23.13337764, -43.79131174], [-22.86242478, -43.74579799]], 
+    [[-23.08989626, -43.44800784], [-22.92912784, -43.62462281], [-23.04879054, -43.55850286]], 
+    [[-23.16814332, -43.5245129], [-22.8843296 , -43.48284038], [-22.97770164, -43.5040954]]]
     time_index = [(st_date + k * timedelta(0, 0, 0, 0, 15)).strftime("%d-%m-%Y, %H:%M:%S") for k in range(len(event_coordinates))]
     hm = plugins.HeatMapWithTime(event_coordinates, index=time_index, auto_play=True, max_opacity=0.6)
     hm.add_to(rio_map)
     return rio_map
   
   # Used to generate data for main view
-  def _get_data(self, data_path : str, st_date : datetime, ed_date : datetime) -> dict[datetime, pd.DataFrame]:
+  def _get_data(self, data_path, st_date, ed_date, st_hour, ed_hour) -> dict[datetime, pd.DataFrame]:
     DATA_DIR = data_path
 
+    i_data = st_date + " " + st_hour + ":00"
+    e_data = ed_date + " " + ed_hour + ":00"
+    id = time.mktime(datetime.strptime(i_data, "%d/%m/%Y %H:%M:%S").timetuple())
+    ed = time.mktime(datetime.strptime(e_data, "%d/%m/%Y %H:%M:%S").timetuple())
     # Each file records 20 seconds of obeservation
-    seconds_dif = (ed_date - st_date).total_seconds()
+    seconds_dif = ed-id
+    total_files = int(seconds_dif/20)
 
-    if (seconds_dif / 900) < 1:
+    #if (seconds_dif / 900) < 1:
       # To take at least 15 minutes of prediction
-      total_files = 45
-    else:
-      total_files = math.ceil(seconds_dif / 900) * 45
+      #total_files = 45
+    #else:
+    #  total_files = math.ceil(seconds_dif / 900) * 45
     
     # total_files = math.ceil(seconds_dif / 20)
-    st_year = st_date.year
-    st_day = st_date.timetuple().tm_yday
-    st_hour = st_date.hour
-    st_minutes = st_date.minute
-    st_seconds = st_date.second
+    st_year = st_date[6:10]
+    st_day = st_date[0:2]
+    st_month = st_date[3:5]
+    st_hour = st_hour[0:2]
+    st_minutes = st_hour[3:5]
+    st_seconds = "00"
+
+    day_of_year = datetime(int(st_year),int(st_month),int(st_day)).timetuple().tm_yday 
+    #day_of_year = str(day_of_year)
+
+    print("horas:", day_of_year, st_year, st_day, st_month, st_hour, st_minutes)
 
     # Calculating the number of the file to start getting data
-    begin_file_number = round(((st_minutes * 60) + st_seconds) / 20) + 1
+    begin_file_number = round((st_minutes * 60) / 20) + 1
 
     # Adding 0 for the pattern '001', '002'...
-    if st_day < 10:
-      st_day = f"00{st_day}"
-    elif st_day >= 10 and st_day <= 99:
-      st_day = f"0{st_day}"
+    if day_of_year < 10:
+      day_of_year = f"00{day_of_year}"
+    elif day_of_year >= 10 and day_of_year <= 99:
+      day_of_year = f"0{day_of_year}"
     
-    if st_hour < 10:
-        st_hour = f"0{st_hour}"
+    #if st_hour < 10:
+    #    st_hour = f"0{st_hour}"
 
-    file_path = f"{DATA_DIR}/{st_year}/{st_day}/{st_hour}"
-    
-    dic_date = st_date
+    file_path = f"{DATA_DIR}/{st_year}/{day_of_year}/{st_hour}"
+    print("filepath:",file_path)
+    dic_date = id
     dataframe_dic = dict()
     total_count, count = (1,1)
     for file in os.listdir(file_path):
@@ -207,6 +204,7 @@ class RioMap():
 
       try:
         ds = self._filter_coordinates(ds)
+        print("abriu o dataset")
       except ValueError:
         print('ValueError')
 
