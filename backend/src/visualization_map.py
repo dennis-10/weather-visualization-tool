@@ -22,10 +22,10 @@ class RioMap(Observacao):
     super().__init__(data_inicio, data_fim, hora_inicio, hora_fim)
     self.map_visualization = self.generate_rio_map(
       data_path,
-      start_date="2022-01-01",
-      end_date="2022-01-01",
-      st_hour="00:00",
-      ed_hour = "00:15")
+      start_date="08/04/2019",
+      end_date="08/04/2019",
+      st_hour="18:00",
+      ed_hour = "18:30")
   
   # Reading and transforming Alerta Rio data
   def generate_rio_map(self, data_path, start_date, end_date, st_hour, ed_hour):
@@ -108,7 +108,7 @@ class RioMap(Observacao):
     df_estacoes = self._get_data(data_path, st_date, ed_date, st_hour, ed_hour)
    
     i_data = st_date + " " + st_hour + ":00"
-    st_date = time.mktime(datetime.strptime(i_data, "%d/%m/%Y %H:%M:%S").timetuple())
+    st_date = datetime.strptime(i_data, "%d/%m/%Y %H:%M:%S")
 
     event_coordinates = []
     coord_list = []
@@ -138,9 +138,9 @@ class RioMap(Observacao):
       else:
         file_count += 1
       # datetime_i = datetime_i + timedelta(0, 1)
-    event_coordinates = [[[-23.0395461 , -43.66783523], [-23.13337764, -43.79131174], [-22.86242478, -43.74579799]], 
-    [[-23.08989626, -43.44800784], [-22.92912784, -43.62462281], [-23.04879054, -43.55850286]], 
-    [[-23.16814332, -43.5245129], [-22.8843296 , -43.48284038], [-22.97770164, -43.5040954]]]
+    #event_coordinates = [[[-23.0395461 , -43.66783523], [-23.13337764, -43.79131174], [-22.86242478, -43.74579799]], 
+    #[[-23.08989626, -43.44800784], [-22.92912784, -43.62462281], [-23.04879054, -43.55850286]], 
+    #[[-23.16814332, -43.5245129], [-22.8843296 , -43.48284038], [-22.97770164, -43.5040954]]]
     time_index = [(st_date + k * timedelta(0, 0, 0, 0, 15)).strftime("%d-%m-%Y, %H:%M:%S") for k in range(len(event_coordinates))]
     hm = plugins.HeatMapWithTime(event_coordinates, index=time_index, auto_play=True, max_opacity=0.6)
     hm.add_to(rio_map)
@@ -154,6 +154,7 @@ class RioMap(Observacao):
     e_data = ed_date + " " + ed_hour + ":00"
     id = time.mktime(datetime.strptime(i_data, "%d/%m/%Y %H:%M:%S").timetuple())
     ed = time.mktime(datetime.strptime(e_data, "%d/%m/%Y %H:%M:%S").timetuple())
+    id2 = datetime.strptime(i_data, "%d/%m/%Y %H:%M:%S")
     # Each file records 20 seconds of obeservation
     seconds_dif = ed-id
     total_files = int(seconds_dif/20)
@@ -165,20 +166,21 @@ class RioMap(Observacao):
     #  total_files = math.ceil(seconds_dif / 900) * 45
     
     # total_files = math.ceil(seconds_dif / 20)
+    hourC = st_hour
     st_year = st_date[6:10]
     st_day = st_date[0:2]
     st_month = st_date[3:5]
     st_hour = st_hour[0:2]
-    st_minutes = st_hour[3:5]
+    st_minutes = hourC[3:5]
     st_seconds = "00"
 
     day_of_year = datetime(int(st_year),int(st_month),int(st_day)).timetuple().tm_yday 
     #day_of_year = str(day_of_year)
-
-    print("horas:", day_of_year, st_year, st_day, st_month, st_hour, st_minutes)
+    #print("hora:", st_hour)
+    #print("horas:", day_of_year, st_year, st_day, st_month, st_hour, st_minutes)
 
     # Calculating the number of the file to start getting data
-    begin_file_number = round((st_minutes * 60) / 20) + 1
+    begin_file_number = round((int(st_minutes) * 60) / 20) + 1
 
     # Adding 0 for the pattern '001', '002'...
     if day_of_year < 10:
@@ -190,8 +192,8 @@ class RioMap(Observacao):
     #    st_hour = f"0{st_hour}"
 
     file_path = f"{DATA_DIR}/{st_year}/{day_of_year}/{st_hour}"
-    print("filepath:",file_path)
-    dic_date = id
+    #print("filepath:",file_path)
+    dic_date = id2
     dataframe_dic = dict()
     total_count, count = (1,1)
     for file in os.listdir(file_path):
@@ -204,7 +206,7 @@ class RioMap(Observacao):
 
       try:
         ds = self._filter_coordinates(ds)
-        print("abriu o dataset")
+        #print("abriu o dataset")
       except ValueError:
         print('ValueError')
 
@@ -217,6 +219,7 @@ class RioMap(Observacao):
       else:
         count += 1
         dic_date = dic_date + timedelta(0, 20)
+        #print("passou")
     
     return dataframe_dic
 
