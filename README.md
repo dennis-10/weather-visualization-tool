@@ -53,13 +53,16 @@ cd weather-visualization-tool
 # Go into backend directory
 cd backend
 
-# Build the Dockerfile for generating an image
-docker-compose build --build-arg SOURCE="{LOCAL_DATA_PATH}"
+# Create a .env file inside backend directory
+SOURCE="DATA_PATH"
 
-- LOCAL_DATA_PATH must be a path with data.  C:/Users/user_name/Desktop/WVT e.g. 
-- Inside LOCAL_DATA_PATH root folder must contain 2 subfolders: 
+- DATA_PATH must be a path with data.  C:/Users/user_name/Desktop/WVT e.g. 
+- Inside DATA_PATH root folder must contain 2 subfolders: 
    "dados_pluviometros" : pluviometric stations data
    "satelite_data" : unziped satelite's data with subfolders YEAR>>DAY_OF_YEAR>>HOUR_OF_DAY
+
+# Build the Dockerfile for generating an image
+docker-compose build
 
 # Run the Docker container
 docker-compose up
