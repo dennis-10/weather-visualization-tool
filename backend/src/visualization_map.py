@@ -26,10 +26,11 @@ class RioMap(Observacao):
       end_date="08/04/2019",
       st_hour="18:00",
       ed_hour = "18:30")
+      
   
   # Reading and transforming Alerta Rio data
   def generate_rio_map(self, data_path, start_date, end_date, st_hour, ed_hour):
-    
+    print(data_path, start_date, end_date, st_hour, ed_hour)
     # Converting from string to datetime
     #st_date = isoparse(start_date)
     #ed_date = isoparse(end_date)
@@ -46,7 +47,7 @@ class RioMap(Observacao):
       print("Exception while getting data, changing the date might solve.")
       print("Getting mocked data instead.")
 
-      return self._generate_map_with_pluviometric(rio_map, grid_cells)
+      return True
 
   def _generate_base_map(self):
     rio_map = folium.Map([-22.925778948753702, -43.489029909370046], zoom_start=10, tiles='cartodbpositron')
@@ -148,7 +149,7 @@ class RioMap(Observacao):
   
   # Used to generate data for main view
   def _get_data(self, data_path, st_date, ed_date, st_hour, ed_hour) -> dict[datetime, pd.DataFrame]:
-    DATA_DIR = data_path
+    DATA_DIR = "./src/static/data/satelite_data"
 
     i_data = st_date + " " + st_hour + ":00"
     e_data = ed_date + " " + ed_hour + ":00"
@@ -202,7 +203,7 @@ class RioMap(Observacao):
         total_count += 1
         continue
       
-      ds = xr.open_dataset(f"{file_path}/{file}")
+      ds = xr.open_dataset(f"{file_path}/{file}",engine="netcdf4")
 
       try:
         ds = self._filter_coordinates(ds)

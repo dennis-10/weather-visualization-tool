@@ -264,8 +264,7 @@
                 let newGrid2 = document.createElement('div');
                 newGrid2.setAttribute("id", "grid-2")
                 
-                await fetch(`http://localhost:5000/chart?start_date=${startDate}&end_date=${endDate}
-                    &start_hour=${startHour}&end_hour=${endHour}&cel_number1=${sel1}&cel_number2=${sel2}`, {
+                await fetch(`http://localhost:5000/chart?start_date=${startDate}&end_date=${endDate}&start_hour=${startHour}&end_hour=${endHour}&cel_number1=${sel1}&cel_number2=${sel2}`, {
                     "method": "GET",
                     "headers": {
                         'Content-type': 'application/json;'
@@ -304,14 +303,13 @@
 
                 // Get the path to the data
                 let path = document.getElementById("path-input").value;
-                
+                path = "./src/static/data/satelite_data"
                 // Prepares to replace with new loaded map
                 let oldMap = document.getElementById("rio_map");
                 let newMap = document.createElement('div');
                 newMap.setAttribute("id", "rio_map")
                 
-                fetch(`http://localhost:5000/map?data_path=${path}&start_date=${startDate}&start_hour=${startHour}
-                &end_date=${endDate}&end_hour=${endHour}`, {
+                fetch(`http://localhost:5000/map?data_path=${path}&start_date=${startDate}&start_hour=${startHour}&end_date=${endDate}&end_hour=${endHour}`, {
                     "method": "GET",
                     "headers": {
                         'Content-type': 'application/json;'

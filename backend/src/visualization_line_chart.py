@@ -172,6 +172,7 @@ class Grafico(Observacao):
         self.eixoX = dates
 
     def geraGrafico(self):
+        print("CHEGOU AQUI")
         self.titulo = 'Grid Cell: ' + str(self.num_celula)
         #self.eixoX = np.arange(1,len(self.eixoY)+1,1)
         x = self.eixoX
